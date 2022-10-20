@@ -15,7 +15,7 @@ android {
         minSdk = 31
         targetSdk = 33
         versionCode = 251
-        versionName = "2.5"
+        versionName = "2.5.1"
     }
 
     val properties = Properties()

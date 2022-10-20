@@ -203,6 +203,7 @@ object Utils {
      */
     inline fun <reified T> Context.sendToHost(prefsData: PrefsData<T>) {
         val host = if (prefsData.key in setOf(
+                "force_show_splash_screen_list",
                 "force_show_splash_screen",
                 "disable_splash_screen",
                 "enable_hot_start_compatible"))
@@ -214,9 +215,10 @@ object Utils {
                 is Int -> "int"
                 is String -> "string"
                 is Boolean -> "boolean"
+                is Set<*> -> "set"
                 else -> "not_support"
             }
-        }-${modulePrefs.get(prefsData)}"
+        }-${if (prefsData.value !is Set<*>) modulePrefs.get(prefsData) else null}"
         dataChannel(host).put(key, value)
         if (prefsData.key == "enable_log")
             dataChannel("android").put("${"android".replace('.', '_')}_config_change", value)
@@ -243,6 +245,9 @@ object Utils {
                 "string" -> {
                     HostPrefsUtil.XSharedPreferencesCaches.stringData[it.split("-")[0]] =
                         it.split("-")[2]
+                }
+                "set" -> {
+                    HostPrefsUtil.XSharedPreferencesCaches.stringSetData.remove(it.split("-")[0])
                 }
             }
             DataCacheUtils.clear()
